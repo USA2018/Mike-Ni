@@ -1,0 +1,166 @@
+---
+title: 'Mini-project:MMS'
+subtitle: CS 750 Machine Learning
+author: Mike Ni
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+
+Mission Objective & Goal:
+
+We have this project to record gather information regarding Earth's magnetic field. due to the fact that the magnetic field is changable and flexible which is based on the solar activity, we have been having a lot of different scitientistis to monitor the data stream. Our goal is to replace those scientists with our machine learning methods
+
+
+
+List Variable:
+1. FGM.Bx, By, Bz : Strength of the magnetic field in each direction
+2. DES.N, DIS.N: Counts (densities) of electrons and ions respectively
+3. DES.Vx,Vy, Vz: Speeds of electrons in 3D
+4. DIS.Vx,Vy, Vz: Speeds of ions in 3D
+5. DES.T_para, T_perp: Temperature of electrons that are parallel/or perpendicular to an axis
+6. DIS.T_para, T_perp: Temperature of ions that are parallel/or perpendicular to an axis
+
+
+```{r,message=FALSE}
+library(ggplot2); theme_set(theme_light())
+library(dplyr)
+library(e1071)
+library(DAAG)
+library(class)
+library(MASS)
+library(dplyr)
+library(e1071)
+library(DAAG)
+library(class)
+library(MASS)
+```
+
+
+```{r}
+
+
+
+mms_filename <- read.csv(file="~/Desktop/CS/Computer Science/CS_750/Project/training.csv", header = TRUE, sep=",")
+set.seed(2019)
+names(mms_filename)
+
+
+
+
+
+  
+
+#mms_filename <- "testset1/mms_20161022.csv"
+#sitl_filename <- "testset1/sitl_20161022.csv"
+# make sure that X1 is a correct row index (it is 0-based originally)
+##mms <- read_csv(mms_filename) %>% mutate(X1 = X1 + 1)
+
+
+```
+
+```{r}
+
+library(randomForest)
+
+
+
+```
+
+```{r}
+
+head(mms_filename)
+tail(mms_filename)
+str(mms_filename)
+
+
+```
+
+```{r}
+summary(mms_filename)
+```
+
+
+
+
+```{r}
+p1 <- ggplot() + geom_line(aes(y = DES.N, x = FGM.Bt),
+            data = mms_filename)
+#p1: write another p1 to visualize the plot. 
+
+
+p1 + labs(title = "The relationship between DES.N and FGM.Bt", x = "Counts (densities) of electrons and ions ", y = "Strength of the magnetic field", caption = "Data: Cavenez.com")
+  
+scale_x_continuous(breaks=seq(2002,2016,2))
+
+#mms_filename$P = ifelse(mms_filename$N > 0, 1)
+
+summary(p1)
+
+```
+
+
+```{r}
+library(rpart)
+library(histogram)
+plot(mms_filename$DES.N, mms_filename$FGM.Bt, col= ifelse(mms_filename$N > 0, "red", "blue"))
+temp <- sample(nrow(mms_filename), 38)
+
+small_dataset <- mms_filename[1:1000, ]
+plot(small_dataset$DES.N, small_dataset$FGM.Bt)
+
+
+
+dim(small_dataset)
+prop.table(table(small_dataset$survived))
+table(small_dataset$FGM.Bt)
+names(small_dataset)
+barplot(table(small_dataset$FGM.Bt))
+
+
+
+
+
+
+
+lm.fit <- lm((DES.N ~ FGM.Bt), data= small_dataset)
+lm.pred <- predict(lm.fit, newdata = small_dataset)
+#print(sqrt(mean((lm.pred - data.test$N)^2)))
+```
+Comment: 
+
+Because the dataset is too large, we could not see anything so we decided to find a subset to analyze the dataset
+
+
+
+
+
+```{r dataset}
+  library(dplyr)
+  data <- read.csv("~/Desktop/CS/Computer Science/CS_750/Project/training.csv")
+  #test <- read.csv("~/Desktop/CS/CS_750/Project/testset1.csv")
+  data.frame <- data.frame(data)
+  data.frame$X1 <- 1:nrow(data.frame)
+  DES.N <- data.frame$DES.N
+  FGM.Bt <- data.frame$FGM.Bt
+  DIS.N <- data.frame$DIS.N
+  DES.T_para <- data.frame$DES.T_para
+  DES.T_perp <- data.frame$DES.T_perp
+  Selected <- data.frame$Selected
+```
+
+
+
+```{r ggplot}
+  library(ggplot2)
+  ggplot(data.frame, mapping = aes(x = DES.N, y = Selected)) + geom_point() + geom_smooth(method = "lm", mapping = aes(x = DES.N, y = Selected), se = FALSE)
+  ggplot(data.frame, mapping = aes(x = FGM.Bt, y = Selected)) + geom_point() + geom_smooth(method = "glm", mapping = aes(x = FGM.Bt, y = Selected), se = FALSE)
+  
+  
+  
+```
+
+
+
+
